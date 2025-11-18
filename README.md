@@ -1,59 +1,194 @@
-# ShoppingCart
+# NgRx Shopping Cart
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+A learning project demonstrating state management with **NgRx** in Angular 19. This application showcases the implementation of a shopping cart with products listing, cart management, and persistent storage.
 
-## Development server
+## 🎯 Learning Objectives
 
-To start a local development server, run:
+This project was created to practice and understand:
+
+- **NgRx Store**: Centralized state management
+- **Actions & Reducers**: Pure functions for state transitions
+- **Effects**: Handling side effects and async operations
+- **Selectors**: Efficient state derivation and memoization
+- **State Persistence**: Using `ngrx-store-localstorage` for cart persistence
+- **Angular Signals & Control Flow**: Modern Angular syntax (`@if`, `@for`)
+
+## 🏗️ Architecture
+
+### State Structure
+
+```
+├── Products State
+│   ├── products: Product[]
+│   ├── loading: boolean
+│   └── error: string | null
+│
+└── Cart State
+    └── items: CartItem[]
+```
+
+### Key NgRx Patterns
+
+- **Feature-based organization**: Separate modules for products and cart
+- **Normalized state**: Products stored separately from cart items
+- **Derived selectors**: Cart items enriched with product details
+- **Effect for API calls**: Product loading via HTTP with error handling
+- **Action groups**: Type-safe actions using `createActionGroup()`
+
+## 📦 Features
+
+- ✅ Product listing with loading states
+- ✅ Add/remove items to/from cart
+- ✅ Increase/decrease item quantities
+- ✅ Cart persistence across browser sessions
+- ✅ Real-time cart total calculation
+- ✅ Error handling and empty states
+- ✅ Responsive image fallback
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v18+)
+- Angular CLI (v19.2.19)
+
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Start the development server
 ng serve
+
+# Start the mock backend (JSON Server)
+npm run server
+# or
+json-server --watch db.json --port 3000
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The application will be available at `http://localhost:4200/`
 
-## Code scaffolding
+### Mock API
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The project uses a JSON Server for mock product data. Ensure `db.json` exists with:
 
-```bash
-ng generate component component-name
+```json
+{
+  "products": [
+    {
+      "id": "1",
+      "name": "Product Name",
+      "description": "Product description",
+      "price": 29.99,
+      "imageUrl": "https://example.com/image.jpg"
+    }
+  ]
+}
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🛠️ Tech Stack
 
-```bash
-ng generate --help
+- **Angular** 19.2.19
+- **NgRx** (Store, Effects, Store Devtools)
+- **RxJS** for reactive programming
+- **TypeScript** for type safety
+- **ngrx-store-localstorage** for state persistence
+
+## 📁 Project Structure
+
+```
+src/app/
+├── products/
+│   ├── product.model.ts
+│   ├── product.actions.ts
+│   ├── product.reducer.ts
+│   ├── product.selector.ts
+│   ├── product.effects.ts
+│   └── product.service.ts
+├── cart/
+│   ├── cart.model.ts
+│   ├── cart.action.ts
+│   ├── cart.reducer.ts
+│   └── cart.selectors.ts
+├── product-list/
+│   └── product-list.component.*
+├── shopping-cart/
+│   └── shopping-cart.component.*
+└── app.config.ts
 ```
 
-## Building
+## 🧪 Key Learning Points
 
-To build the project run:
-
-```bash
-ng build
+### 1. Effects Pattern
+```typescript
+loadProducts$ = createEffect(() =>
+  this.action$.pipe(
+    ofType(ProductActions.loadProducts),
+    exhaustMap(() =>
+      this.productService.getProducts().pipe(
+        map((products) => ProductActions.loadProductsSuccess({ products })),
+        catchError((error) => of(ProductActions.loadProductsFailure({ error })))
+      )
+    )
+  )
+);
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+### 2. Selector Composition
+```typescript
+export const selectCartItemsWithDetails = createSelector(
+  selectCartItems,
+  selectAllProducts,
+  (items, products) => {
+    return items.map(item => ({
+      ...item,
+      ...products.find(p => p.id === item.productId)
+    }));
+  }
+);
 ```
 
-## Running end-to-end tests
+### 3. Immutable Updates
+```typescript
+on(CartActions.addItem, (state, { productId }) => {
+  const existingItemIndex = state.items.findIndex(item => item.productId === productId);
+  
+  const updatedItems = existingItemIndex > -1
+    ? state.items.map((item, index) =>
+        index === existingItemIndex ? { ...item, quantity: item.quantity + 1 } : item
+      )
+    : [...state.items, { productId, quantity: 1 }];
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+  return { ...state, items: updatedItems };
+})
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🔍 Redux DevTools
 
-## Additional Resources
+The project is configured with NgRx Store Devtools. Install the Redux DevTools browser extension to:
+- Inspect state changes
+- Time-travel debugging
+- Action replay
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📚 Resources
+
+- [NgRx Documentation](https://ngrx.io/)
+- [Angular Documentation](https://angular.dev/)
+- [RxJS Documentation](https://rxjs.dev/)
+
+## 🤝 Contributing
+
+This is a learning project. Feel free to fork and experiment with:
+- Adding new features (wishlist, checkout, etc.)
+- Implementing NgRx Entity
+- Adding router state management
+- Writing unit tests for reducers and effects
+
+## 📝 License
+
+This project is open source and available for educational purposes.
+
+---
+
+**Note**: This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
