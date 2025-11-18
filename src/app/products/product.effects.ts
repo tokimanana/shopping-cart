@@ -18,7 +18,12 @@ export class ProductEffects {
             return ProductActions.loadProductsSuccess({ products });
           }),
           catchError((error) => {
-            return of(ProductActions.loadProductsFailure({ error }));
+            const apiError = {
+              message: error?.message || 'Failed to load products',
+              code: error?.code,
+              details: error
+            };
+            return of(ProductActions.loadProductsFailure({ error: apiError }));
           })
         )
       )
