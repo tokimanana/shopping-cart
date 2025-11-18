@@ -32,4 +32,9 @@ export class ProductListComponent implements OnInit {
   addToCart(productId: string): void {
     this.store.dispatch(CartActions.addItem({ productId }));
   }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = 'https://placehold.co/300x200/cccccc/ffffff?text=Image+Error';
+  }
 }
