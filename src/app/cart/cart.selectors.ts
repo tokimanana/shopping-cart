@@ -18,7 +18,7 @@ export const selectCartTotalItems = createSelector(selectCartItems, (items) =>
   items.reduce((total, item) => total + item.quantity, 0)
 );
 
-const mapCartItemToDetailes = (
+const mapCartItemToDetails = (
   cartItem: CartItem,
   products: Product[]
 ): CartItemDetailed => {
@@ -49,7 +49,7 @@ export const selectCartItemsWithDetails = createSelector(
       return [];
     }
 
-    return items.map(item => mapCartItemToDetailes(item, products));
+    return items.map(item => mapCartItemToDetails(item, products));
   }
 );
 
