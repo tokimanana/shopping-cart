@@ -13,3 +13,15 @@ export const selectProductById = (productId: string) => createSelector(
   selectAllProducts,
   (products) => products.find(p => p.id === productId)
 )
+
+// selectProductsLoading
+export const selectProductsLoading = createSelector(
+  selectProductState,
+  (state) => state.loading
+)
+
+// selectProductsError
+export const selectProductsError = createSelector(
+  selectProductState,
+  (state) => state.error
+)

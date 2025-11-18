@@ -1,6 +1,6 @@
-import { createReducer, on } from "@ngrx/store";
-import { ProductState } from "./product.model";
-import { ProductActions } from "./product.action";
+import { createReducer, on } from '@ngrx/store';
+import { ProductState } from './product.model';
+import { ProductActions } from './product.actions';
 
 export const productsFeatureKey = 'products';
 
@@ -8,7 +8,7 @@ export const initialState: ProductState = {
   products: [],
   loading: false,
   error: null,
-}
+};
 
 export const productsReducer = createReducer(
   initialState,
@@ -30,5 +30,5 @@ export const productsReducer = createReducer(
     ...state,
     loading: false,
     error: error,
-  })),
-)
+  }))
+);
