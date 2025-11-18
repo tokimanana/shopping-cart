@@ -32,7 +32,7 @@ export class ShoppingCartComponent {
   }
 
   clearCart() {
-    if(confirm('Are you sure you want to clear the Cart?')) {
+    if (confirm('Are you sure you want to clear your cart? This action cannot be undone.')) {
       this.store.dispatch(CartActions.clearCart());
     }
   }

@@ -9,5 +9,5 @@ export interface Product {
 export interface ProductState {
   products: Product[];
   loading: boolean;
-  error: any;
+  error: string | null;
 }
