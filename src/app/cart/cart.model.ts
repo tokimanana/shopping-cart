@@ -10,6 +10,3 @@ export interface CartItemDetailed extends CartItem {
   lineTotal: number;
 }
 
-export interface CartState {
-  items: CartItem[];
-}
