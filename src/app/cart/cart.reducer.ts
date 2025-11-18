@@ -15,23 +15,16 @@ export const initialState: CartState = {
 export const cartReducer = createReducer(
   initialState,
 
-  on(CartActions.addItem, (state, { productId }) => {
+  on(CartActions.addItem, CartActions.increaseQuantity, (state, { productId }) => {
     const existingItemIndex = state.items.findIndex(item => item.productId === productId);
 
-    let updatedItems: CartItem[];
+    const updatedItems: CartItem[] = existingItemIndex > -1
+      ? state.items.map((item, index) =>
+          index === existingItemIndex ? { ...item, quantity: item.quantity + 1 } : item
+        )
+      : [...state.items, { productId, quantity: 1 }];
 
-    if(existingItemIndex > -1) {
-      updatedItems = state.items.map((item, index) =>
-        index === existingItemIndex ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    } else {
-      updatedItems = [...state.items, { productId, quantity: 1 }];
-    }
-
-    return {
-      ...state,
-      items: updatedItems,
-    }
+    return { ...state, items: updatedItems };
   }),
 
   on(CartActions.removeItem, (state, { productId }) => ({
@@ -39,29 +32,22 @@ export const cartReducer = createReducer(
     items: state.items.filter(item => item.productId !== productId),
   })),
 
-  on(CartActions.increaseQuantity, (state, { productId }) => ({
-    ...state,
-    items: state.items.map(item =>
-      item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
-    )
-  })),
-
   on(CartActions.decreaseQuantity, (state, { productId }) => {
     const existingItem = state.items.find(item => item.productId === productId);
 
-    if(existingItem && existingItem.quantity > 1) {
-      return {
-        ...state,
-        items: state.items.map(item =>
-          item.productId === productId ? { ...item, quantity: item.quantity - 1 } : item
-        )
-      }
-    } else {
+    if (!existingItem || existingItem.quantity <= 1) {
       return {
         ...state,
         items: state.items.filter(item => item.productId !== productId),
-      }
+      };
     }
+
+    return {
+      ...state,
+      items: state.items.map(item =>
+        item.productId === productId ? { ...item, quantity: item.quantity - 1 } : item
+      )
+    };
   }),
 
   on(CartActions.clearCart, (state) => ({
