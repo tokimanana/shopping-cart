@@ -1,0 +1,79 @@
+<h2>Shopping Cart</h2>
+
+@if(cartItem$ | async; as items) {
+  @if (items.length === 0) {
+    <div class="empty-cart">
+      Your Shopping Cart is empty. Add some products!
+    </div>
+  } @else {
+    <div class="cart-container">
+      <ul>
+        <li class="cart-header">
+          <span class="item-details">Product</span>
+          <span class="item-quantity">Quantity</span>
+          <span class="item-price">Price</span>
+          <span class="item-total">Total</span>
+          <span class="item-actions">Actions</span>
+        </li>
+
+        @for (item of items; track item.productId) {
+          <li class="cart-item">
+            <div class="item-details">
+              <img
+                [src]="item.imageUrl"
+                [alt]="item.name"
+                class="item-image"
+                (error)="onImageError($event)"
+              >
+              <span>{{ item.name }}</span>
+            </div>
+            <div class="item-quantity">
+              <button
+                (click)="decrease(item.productId)"
+                class="quantity-btn"
+                type="button"
+                aria-label="Decrease quantity"
+              >
+                -
+              </button>
+              <span>{{ item.quantity }}</span>
+              <button
+                (click)="increase(item.productId)"
+                class="quantity-btn"
+                type="button"
+                aria-label="Increase quantity"
+              >
+                +
+              </button>
+            </div>
+            <span class="item-price">{{ item.price | currency:'USD':'symbol' }}</span>
+            <span class="item-total">{{ item.lineTotal | currency:'USD':'symbol' }}</span>
+            <div class="item-actions">
+              <button
+                (click)="remove(item.productId)"
+                class="remove-btn"
+                type="button"
+                aria-label="Remove item"
+              >
+                Remove
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+
+      <div class="cart-summary">
+        <button
+          (click)="clearCart()"
+          class="clear-cart-btn"
+          type="button"
+        >
+          Clear Cart
+        </button>
+        <div class="cart-total">
+          <strong>Grand Total: {{ totalPrice$ | async | currency:'USD':'symbol' }}</strong>
+        </div>
+      </div>
+    </div>
+  }
+}
