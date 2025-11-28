@@ -1,0 +1,48 @@
+<div class="product-list-container">
+  <h2>Products</h2>
+
+  @if (isLoading$ | async) {
+    <p class="loading">Loading products... Please wait</p>
+  }
+
+  @if (error$ | async; as error) {
+    <div class="error">
+      <p>Error loading products</p>
+      <pre>{{ error?.message || error | json }}</pre>
+    </div>
+  }
+
+  @if (!(isLoading$ | async) && !(error$ | async)) {
+    @if (products$ | async; as products) {
+      @if (products.length === 0) {
+        <p class="empty-message">No products available</p>
+      } @else {
+        <div class="product-grid">
+          @for (product of products; track product.id) {
+            <div class="product-card">
+              <img
+                [src]="product.imageUrl"
+                [alt]="product.name"
+                class="product-image"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+              <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <p class="product-price">{{ product.price | currency: 'USD':'symbol' }}</p>
+                <button
+                  class="add-to-cart-btn"
+                  (click)="addToCart(product.id)"
+                  type="button"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+</div>
