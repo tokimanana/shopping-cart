@@ -1,11 +1,9 @@
 const dbData = require('../public/db.json');
 
 module.exports = (req, res) => {
-  // Désactivez la compression automatique
-  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
 
-  // Envoyez les données sans compression
-  res.status(200).send(JSON.stringify(dbData.products));
+  const products = dbData.products.slice(0, 10);
+  res.status(200).send(JSON.stringify(products));
 };
