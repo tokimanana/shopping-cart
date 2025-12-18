@@ -21,7 +21,7 @@
           @for (product of products; track product.id) {
             <div class="product-card">
               <img
-                [src]="product.imageUrl"
+                [src]="product.imageUrl || 'https://placehold.co/300x200/cccccc/ffffff?text=' + (product.name | slice:0:15)"
                 [alt]="product.name"
                 class="product-image"
                 loading="lazy"

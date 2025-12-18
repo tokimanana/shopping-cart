@@ -9,17 +9,23 @@ export default function handler(req, res) {
 
   // Get pagination parameters
   const page = parseInt(req.query.page || '1', 10);
-  const limit = parseInt(req.query.limit || '10', 10);
+  const limit = parseInt(req.query.limit || '5', 10);
 
   // Validate pagination parameters
   const validPage = Math.max(1, page);
-  const validLimit = Math.min(Math.max(1, limit), 50); // Max 50 per page
+  const validLimit = Math.min(Math.max(1, limit), 20); // Max 20 per page
 
   const startIndex = (validPage - 1) * validLimit;
   const endIndex = startIndex + validLimit;
 
-  // Paginate products
-  const paginatedProducts = dbData.products.slice(startIndex, endIndex);
+  // Paginate and strip large imageUrl fields to reduce payload
+  const paginatedProducts = dbData.products.slice(startIndex, endIndex).map(product => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price
+    // imageUrl intentionally excluded to reduce payload size
+  }));
 
   // Response metadata
   const response = {

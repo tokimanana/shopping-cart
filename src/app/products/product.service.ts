@@ -24,7 +24,7 @@ export class ProductService {
     ? '/api/products'  // ← Vercel Serverless Function
     : `${environment.apiUrl}/products`;  // ← json-server local
 
-  getProducts(page: number = 1, limit: number = 20): Observable<Product[]> {
+  getProducts(page: number = 1, limit: number = 5): Observable<Product[]> {
     let params = new HttpParams();
     if (environment.production) {
       params = params.set('page', page.toString());
